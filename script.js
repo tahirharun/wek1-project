@@ -1,65 +1,36 @@
-let expenses = [];
-let totalAmount = 0;
+let total = 0;
 
-const categorySelect = document.getElementById('category-select');
-const amountInput = document.getElementById('amount-input');
-const dateInput = document.getElementById('date-input');
-const addBtn = document.getElementById('add-btn');
-const expensesTableBody = document.getElementById('expenses-tbale-body'); // using your original typo ID
-const totalAmountCell = document.getElementById('total-amount');
+document.getElementById("add-btn").addEventListener("click", function () {
+  const category = document.getElementById("category").value;
+  const amount = parseFloat(document.getElementById("amount").value);
+  const date = document.getElementById("date").value;
+  const tableBody = document.getElementById("expenses-table-body");
 
-addBtn.addEventListener('click', function () {
-  const category = categorySelect.value;
-  const amount = Number(amountInput.value);
-  const date = dateInput.value;
-
-  if (category === '') {
-    alert('Please select a category');
+  if (!category || isNaN(amount) || !date) {
+    alert("Please fill in all fields.");
     return;
   }
 
-  if (isNaN(amount) || amount <= 0) {
-    alert('Please enter a valid amount');
-    return;
-  }
+  const row = document.createElement("tr");
 
-  if (date === '') {
-    alert('Please select a date');
-    return;
-  }
+  row.innerHTML = `
+    <td>${category}</td>
+    <td>${amount.toFixed(2)}</td>
+    <td>${date}</td>
+    <td><button class="delete-btn">Delete</button></td>
+  `;
 
-  const expense = { category, amount, date };
-  expenses.push(expense);
+  tableBody.appendChild(row);
+  total += amount;
+  document.getElementById("total-amount").innerText = total.toFixed(2);
 
-  totalAmount += amount;
-  totalAmountCell.textContent = totalAmount.toFixed(2);
+  document.getElementById("amount").value = '';
+  document.getElementById("date").value = '';
 
-  const newRow = expensesTableBody.insertRow();
-
-  const categoryCell = newRow.insertCell();
-  const amountCell = newRow.insertCell();
-  const dateCell = newRow.insertCell();
-  const deleteCell = newRow.insertCell();
-
-  categoryCell.textContent = expense.category;
-  amountCell.textContent = expense.amount;
-  dateCell.textContent = expense.date;
-
-  const deleteBtn = document.createElement('button');
-  deleteBtn.textContent = 'Delete';
-  deleteBtn.classList.add('delete-btn');
-
-  deleteBtn.addEventListener('click', function () {
-    expenses.splice(expenses.indexOf(expense), 1);
-    totalAmount -= expense.amount;
-    totalAmountCell.textContent = totalAmount.toFixed(2);
-    expensesTableBody.removeChild(newRow);
+  // Add delete event
+  row.querySelector(".delete-btn").addEventListener("click", function () {
+    row.remove();
+    total -= amount;
+    document.getElementById("total-amount").innerText = total.toFixed(2);
   });
-
-  deleteCell.appendChild(deleteBtn);
-
-  // Clear input fields
-  categorySelect.value = '';
-  amountInput.value = '';
-  dateInput.value = '';
 });
